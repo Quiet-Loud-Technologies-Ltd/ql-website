@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ql-website",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3400", "."],
+      "port": 3400
+    },
+    {
+      "name": "hww-standalone",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-p", "3401", "C:\\Users\\muhsi\\Downloads"],
+      "port": 3401
+    }
+  ]
+}
