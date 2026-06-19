@@ -1348,6 +1348,8 @@ footer {
 .ct-lead { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: var(--ink-soft); max-width: 40ch; line-height: 1.6; margin: 0; }
 .ct-hero-note { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--ink-faint); text-align: right; line-height: 1.5; flex-shrink: 0; }
 .ct-hero-note strong { display: block; color: var(--ink-soft); font-weight: 500; }
+.ct-hero-note a, .ct-form-note a { color: var(--accent-bright); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .25s var(--ease); }
+.ct-hero-note a:hover, .ct-form-note a:hover { border-bottom-color: var(--accent-bright); }
 
 /* 3-column intent grid */
 .ct-grid {
@@ -1564,6 +1566,19 @@ footer {
   line-height: 1.5;
 }
 .ct-field input::placeholder, .ct-field textarea::placeholder { color: var(--line2); }
+/* Kill the white background browsers paint on autofilled / prefilled fields */
+.ct-field input:-webkit-autofill,
+.ct-field input:-webkit-autofill:hover,
+.ct-field input:-webkit-autofill:focus,
+.ct-field input:-webkit-autofill:active,
+.ct-field textarea:-webkit-autofill,
+.ct-field select:-webkit-autofill {
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-box-shadow: 0 0 0 1000px var(--bg2) inset;
+  box-shadow: 0 0 0 1000px var(--bg2) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
 .ct-field select { appearance: none; cursor: pointer; color: var(--ink-soft); }
 .ct-field select:focus { color: var(--ink); }
 .ct-field select option { background: #1c1a17; color: var(--ink); }
@@ -6748,7 +6763,7 @@ nav {
       </div>
       <div class="ct-hero-note">
         <strong>Responds within 1 business day</strong>
-        hello@quietloud.ai
+        <a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a>
       </div>
     </div>
 
@@ -6858,8 +6873,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note">hello@quietloud.ai &middot; Responds in 1 business day</span>
-          <button class="btn primary">Send</button>
+          <span class="ct-form-note"><a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a> &middot; Responds in 1 business day</span>
+          <button class="btn primary" onclick="sendForm('form-event','celebrate@quiet-loud.com')">Send</button>
         </div>
       </div>
     </div>
@@ -6891,8 +6906,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note">partners@quietloud.ai</span>
-          <button class="btn primary">Send inquiry</button>
+          <span class="ct-form-note"><a href="mailto:partners@quietloud.ai">partners@quietloud.ai</a></span>
+          <button class="btn primary" onclick="sendForm('form-partner','partners@quietloud.ai')">Send inquiry</button>
         </div>
       </div>
     </div>
@@ -6924,8 +6939,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note">hello@quietloud.ai</span>
-          <button class="btn primary">Send</button>
+          <span class="ct-form-note"><a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a></span>
+          <button class="btn primary" onclick="sendForm('form-general','celebrate@quiet-loud.com')">Send</button>
         </div>
       </div>
     </div>
@@ -7234,6 +7249,26 @@ function selectIntent(intent) {
       form.classList.remove('show');
     }
   });
+}
+
+/* Compose a pre-filled email from a contact form and hand off to the user's mail client */
+function sendForm(formId, to) {
+  const form = document.getElementById(formId);
+  if (!form) return;
+  const titleEl = form.querySelector('.ct-form-title');
+  const title = titleEl ? titleEl.textContent.trim() : 'Website inquiry';
+  const lines = [];
+  form.querySelectorAll('.ct-field').forEach(field => {
+    const labelEl = field.querySelector('label');
+    const control = field.querySelector('input, select, textarea');
+    if (!labelEl || !control) return;
+    const value = (control.value || '').trim();
+    lines.push(labelEl.textContent.trim() + ': ' + (value || '—'));
+  });
+  const subject = 'Quiet Loud — ' + title;
+  window.location.href = 'mailto:' + to +
+    '?subject=' + encodeURIComponent(subject) +
+    '&body=' + encodeURIComponent(lines.join('\n'));
 }
 
 /* ── TOOL NOTEBOOK ── */
