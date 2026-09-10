@@ -1348,8 +1348,6 @@ footer {
 .ct-lead { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; color: var(--ink-soft); max-width: 40ch; line-height: 1.6; margin: 0; }
 .ct-hero-note { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--ink-faint); text-align: right; line-height: 1.5; flex-shrink: 0; }
 .ct-hero-note strong { display: block; color: var(--ink-soft); font-weight: 500; }
-.ct-hero-note a, .ct-form-note a { color: var(--accent-bright); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .25s var(--ease); }
-.ct-hero-note a:hover, .ct-form-note a:hover { border-bottom-color: var(--accent-bright); }
 
 /* 3-column intent grid */
 .ct-grid {
@@ -1566,19 +1564,6 @@ footer {
   line-height: 1.5;
 }
 .ct-field input::placeholder, .ct-field textarea::placeholder { color: var(--line2); }
-/* Kill the white background browsers paint on autofilled / prefilled fields */
-.ct-field input:-webkit-autofill,
-.ct-field input:-webkit-autofill:hover,
-.ct-field input:-webkit-autofill:focus,
-.ct-field input:-webkit-autofill:active,
-.ct-field textarea:-webkit-autofill,
-.ct-field select:-webkit-autofill {
-  -webkit-text-fill-color: var(--ink);
-  caret-color: var(--ink);
-  -webkit-box-shadow: 0 0 0 1000px var(--bg2) inset;
-  box-shadow: 0 0 0 1000px var(--bg2) inset;
-  transition: background-color 9999s ease-in-out 0s;
-}
 .ct-field select { appearance: none; cursor: pointer; color: var(--ink-soft); }
 .ct-field select:focus { color: var(--ink); }
 .ct-field select option { background: #1c1a17; color: var(--ink); }
@@ -2439,6 +2424,20 @@ nav {
 }
 .bento-tile:hover .bt-chip { border-color: var(--accent-dim); color: var(--ink); }
 
+/* mimo tile (consumer product). Carries mimo's own brand purple, not the QL accent.
+   Tokens from B2C brand/mimo-tokens.css: purple-500 #8B4FD0, purple-700 #5E2699, cream #E4DFD3. */
+.bt-mimo { background: linear-gradient(140deg, var(--bg2), rgba(139,79,208,.10)); }
+.bt-mimo .bt-icon {
+  background: linear-gradient(135deg, #8B4FD0 0%, #5E2699 100%);
+  color: #E4DFD3;
+}
+.bt-mimo:hover .bt-icon { background: linear-gradient(135deg, #9d66dc 0%, #6d2eb0 100%); }
+/* the mark is a filled glyph, not a stroked icon: override the stroked-icon defaults.
+   It is also 1.4:1, so height is set from the aspect instead of the square 22px default. */
+.bt-mimo .bt-icon svg { fill: currentColor; stroke: none; width: 26px; height: 19px; }
+.bt-mimo .bt-num { color: rgba(196,162,232,.75); }
+.bt-mimo .bt-title { font-weight: 700; letter-spacing: -.03em; }
+
 /* � PRODUCTS tile � */
 .bt-products { background: linear-gradient(140deg, var(--bg2), rgba(124,58,237,.07)); }
 .bt-products .bt-icon { background: rgba(124,58,237,.2); }
@@ -2569,6 +2568,7 @@ nav {
     margin: 0;
   }
   .bento-tile .bt-icon svg { width: 16px; height: 16px; }
+  .bt-mimo .bt-icon svg { width: 19px; height: 14px; } /* 1.4:1 mark, sized to match sibling icon mass */
 
   /* hide all non-essential content */
   .bt-num, .bt-desc, .bt-chips, .bt-badge, .bt-soon-tag, .bt-trust, .bt-wm, .bt-arrow-x { display: none; }
@@ -4367,8 +4367,9 @@ nav {
 
 /* header */
 .nqs-head { text-align: center; margin-bottom: clamp(40px,5vw,64px); }
-.nqs-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 26px; }
+.nqs-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 26px; }
 .nqs-logo-img { height: 40px; width: auto; display: block; }
+.nqs-by { font-family: var(--ff-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint); }
 .nqs-mark {
   width: 54px; height: 54px; border-radius: 16px;
   display: grid; place-items: center; position: relative;
@@ -4806,14 +4807,15 @@ nav {
 }
 
 /* ===== NUQLEUS HOME HERO (.nqx-) ===== */
-.nqx { background: #f2f0eb; padding: clamp(32px,5vw,80px) clamp(14px,2.5vw,40px); }
+/* full-bleed closing section. Mirrors .herov2: edge-to-edge shell, content
+   constrained one level down on .nqx-stage. #09060f matches the darkest stop
+   of .nqx-bg so no subpixel seam shows at the edges. */
+.nqx { background: #09060f; padding: 0; }
 .nqx-wrap {
-  position: relative; max-width: 1140px; margin: 0 auto;
-  border-radius: clamp(20px,2.5vw,28px); overflow: hidden; min-height: 0;
+  position: relative; overflow: hidden;
+  min-height: 100vh; min-height: 100svh;
   display: flex; flex-direction: column;
-  padding: clamp(22px,2.8vw,40px) clamp(24px,3.6vw,52px);
-  border: 1px solid rgba(0,0,0,.07);
-  box-shadow: 0 28px 72px -24px rgba(0,0,0,.28), 0 6px 18px -6px rgba(0,0,0,.10);
+  padding: clamp(56px,9vh,110px) 0;
   isolation: isolate;
 }
 .nqx-bg {
@@ -4848,12 +4850,13 @@ nav {
 }
 .nqx-stage {
   position: relative; z-index: 3; flex: 1;
+  width: 100%; max-width: 1340px; margin: 0 auto; padding: 0 48px;
   display: grid; grid-template-columns: minmax(0,1fr) auto;
-  gap: clamp(26px,4vw,60px); align-items: stretch;
+  gap: clamp(26px,4vw,60px); align-items: center;
 }
-.nqx-main { position: relative; max-width: 44ch; display: flex; flex-direction: column; padding-top: clamp(10px,1.4vw,20px); }
+.nqx-main { position: relative; max-width: none; display: flex; flex-direction: column; padding-top: clamp(10px,1.4vw,20px); }
 .nqx-logo { height: 24px; width: auto; display: block; align-self: flex-start; margin-bottom: 20px; opacity: .90; filter: drop-shadow(0 2px 10px rgba(124,58,237,.4)); transition: opacity .9s var(--ease) .05s, transform .9s var(--ease) .05s; }
-.nqx-h { font-family: var(--ff-jakarta); font-weight: 800; font-size: clamp(22px,2.6vw,38px); line-height: 1.08; letter-spacing: -.035em; color: #fff; margin: 0; }
+.nqx-h { font-family: var(--ff-jakarta); font-weight: 800; font-size: clamp(24px,3vw,44px); line-height: 1.08; letter-spacing: -.035em; color: #fff; margin: 0; }
 .nqx-ln { display: block; overflow: hidden; padding-bottom: .07em; margin-bottom: -.07em; }
 .nqx-li { display: block; transform: translateY(0); transition: transform 1.05s var(--ease) .12s; }
 .nqx-ln:nth-child(2) .nqx-li { transition-delay: .26s; }
@@ -4893,21 +4896,36 @@ nav {
   transform: translateX(-130%); transition: transform .8s var(--ease);
 }
 .nqx-cta:hover .sheen { transform: translateX(130%); }
+/* pilot / waitlist block. Was a footnote link, now a real panel so the EMC
+   offer is not buried on a page that is otherwise client-facing. */
 .nqx-emc {
   position: relative; z-index: 3; margin-top: auto;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 7px;
-  padding: 0; padding-top: clamp(20px,2.4vw,28px);
+  display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  margin-top: clamp(20px,2.4vw,28px);
+  padding: clamp(16px,1.8vw,22px);
+  border: 1px solid rgba(154,92,255,.24); border-radius: 16px;
+  background: linear-gradient(160deg, rgba(124,58,237,.10), rgba(124,58,237,.03));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
   transition: opacity 1s var(--ease) .78s, transform 1s var(--ease) .78s;
 }
 .nqx-emc-k {
   font-family: var(--ff-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(201,176,255,.5); white-space: nowrap;
+  color: rgba(201,176,255,.78); white-space: nowrap;
 }
-.nqx-emc-p { font-family: var(--ff-jakarta); font-size: 13px; line-height: 1.55; color: rgba(244,242,236,.46); margin: 0; max-width: 46ch; }
+.nqx-emc-p { font-family: var(--ff-jakarta); font-size: 13.5px; line-height: 1.55; color: rgba(244,242,236,.72); margin: 0; max-width: 46ch; }
 .nqx-chaos-sm { font-family: var(--ff-serif); font-style: italic; font-weight: 400; font-size: 1.1em; color: rgba(201,176,255,.85); }
 .nqx-seats { color: rgba(201,176,255,.7); }
-.nqx-emc-a { margin-top: 2px; font-family: var(--ff-jakarta); font-size: 12.5px; font-weight: 600; color: rgba(201,176,255,.6); cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(154,92,255,.35); transition: color .2s, text-decoration-color .2s; }
-.nqx-emc-a:hover { color: rgba(220,202,255,.92); text-decoration-color: rgba(154,92,255,.75); }
+.nqx-emc-btn {
+  margin-top: 2px; display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--ff-jakarta); font-size: 13px; font-weight: 700; letter-spacing: -.01em;
+  color: #fff; background: linear-gradient(180deg, var(--accent-bright), var(--accent));
+  border: none; border-radius: 999px; padding: 10px 18px; cursor: pointer;
+  box-shadow: 0 12px 30px -12px rgba(124,58,237,.7);
+  transition: transform .25s var(--ease-spring), box-shadow .25s;
+}
+.nqx-emc-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(124,58,237,.9); }
+.nqx-emc-arr { transition: transform .25s var(--ease-spring); }
+.nqx-emc-btn:hover .nqx-emc-arr { transform: translateX(3px); }
 .nqx-field { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .nqx-icon { position: absolute; color: #b7b1c6; will-change: transform, opacity; }
 .nqx-icon svg { display: block; width: 100%; height: 100%; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
@@ -4988,8 +5006,8 @@ nav {
 .nqx-pre .nqx-emc { opacity: 0; transform: translateY(18px); }
 @media (max-width: 920px) {
   .nqx-field { display: none; }
-  .nqx-wrap { min-height: 0; }
-  .nqx-stage { grid-template-columns: 1fr; gap: 32px; }
+  .nqx-wrap { min-height: 0; padding: clamp(48px,8vh,80px) 0; }
+  .nqx-stage { grid-template-columns: 1fr; gap: 32px; padding: 0 clamp(18px,5vw,48px); }
   .nqx-main { max-width: none; }
   .nqx-cardwrap { justify-content: flex-start; }
 }
@@ -5002,6 +5020,62 @@ nav {
   .nqx-li, .nqx-logo, .nqx-sub, .nqx-crev, .nqx-emc, .nqx-engine { transition: none !important; }
 }
 /* ===== END NUQLEUS HOME HERO ===== */
+
+/* ===== MIMO RUNNING STRIP =====
+   Thin ticker between the stats band and Run of Show. Two identical
+   sequences sit side by side and the track travels exactly -50%, so the
+   loop is seamless. Horizontal ramp (both edges land on the same purple)
+   lets the edge fades blend. Pauses on hover and honours reduced motion. */
+.mmot {
+  position: relative; overflow: hidden;
+  background: linear-gradient(90deg, #5E2699 0%, #8B4FD0 50%, #5E2699 100%);
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(0,0,0,.20);
+}
+.mmot::before, .mmot::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: clamp(40px,7vw,110px);
+  z-index: 2; pointer-events: none;
+}
+.mmot::before { left: 0;  background: linear-gradient(90deg, #5E2699, rgba(94,38,153,0)); }
+.mmot::after  { right: 0; background: linear-gradient(270deg, #5E2699, rgba(94,38,153,0)); }
+.mmot-track { display: flex; width: max-content; animation: mmotRun 46s linear infinite; }
+.mmot:hover .mmot-track { animation-play-state: paused; }
+.mmot-seq { display: flex; align-items: center; flex-shrink: 0; }
+.mmot-item {
+  display: inline-flex; align-items: center;
+  height: clamp(46px,4vw,58px); white-space: nowrap;
+  font-family: var(--ff-jakarta); font-size: clamp(13px,1.05vw,14.5px);
+  color: rgba(228,223,211,.86); letter-spacing: -.005em;
+}
+.mmot-lock { display: inline-flex; align-items: center; gap: 8px; }
+/* path is fill="currentColor", so tint via color */
+.mmot-mark { width: 22px; height: 16px; color: #E4DFD3; fill: currentColor; display: block; flex-shrink: 0; }
+.mmot-lock b { font-family: var(--ff-head); font-size: 15px; font-weight: 700; letter-spacing: -.035em; color: #E4DFD3; }
+.mmot-txt { color: rgba(228,223,211,.8); }
+.mmot-dot {
+  width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(228,223,211,.42); margin: 0 clamp(18px,2.2vw,34px);
+}
+.mmot-cta {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-weight: 700; font-size: 13px; letter-spacing: -.01em;
+  color: #2E1249; background: #E4DFD3; border-radius: 999px; padding: 7px 15px;
+  text-decoration: none; cursor: pointer;
+  transition: background .25s var(--ease), transform .25s var(--ease-spring);
+}
+/* the track pauses on hover, so the CTA is a stationary target by the time it is clicked */
+.mmot-cta:hover { background: #fff; transform: translateY(-1px); }
+.mmot-cta:focus-visible { outline: 2px solid #E4DFD3; outline-offset: 3px; }
+.mmot-tag {
+  font-family: var(--ff-mono); font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(228,223,211,.95); background: rgba(255,255,255,.14);
+  border: 1px solid rgba(228,223,211,.42); border-radius: 999px;
+  padding: 2px 6px; line-height: 1.5; margin-left: 8px; flex-shrink: 0;
+}
+@keyframes mmotRun { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .mmot-track { animation: none; }
+}
 
 /* ── WHAT WE RUN accordion ── */
 #pg-services { background:#f2f0eb; }
@@ -5285,14 +5359,14 @@ nav {
         <span class="bt-arrow">&rarr;</span>
       </button>
 
-      <!-- 4 . AI Tools -->
-      <button class="bento-tile bt-soon" data-page="tools">
+      <!-- 4 . mimo (consumer product) -->
+      <button class="bento-tile bt-mimo bt-soon" data-page="mimo">
+        <span class="bt-num">PRIVATE CELEBRATIONS</span>
         <div class="bt-icon">
-          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <svg viewBox="0 0 372 266" aria-hidden="true"><path d="M124.258 0.337891C145.802 -1.75824 174.664 6.17881 193.452 16.5068C216.916 29.2421 234.261 50.887 241.576 76.5576C319.782 68.5436 359.628 107.027 367.175 183.028C367.746 182.055 367.363 182.558 368.438 181.607C369.746 188.374 369.641 197.514 370.145 204.549C371.644 225.461 371.752 243.952 370.375 264.835C356.684 265.784 338.344 265.323 324.361 265.338L243.516 265.25C243.342 258.974 243.104 244.49 243.904 238.669C245.536 226.792 248.03 215.432 249.163 203.19C237.687 216.585 232.678 224.781 225.703 240.777C223.651 247.361 219.848 258.333 219.014 264.717C208.322 265.68 192.648 265.329 181.586 265.343C163.094 265.47 144.6 265.397 126.11 265.123C124.9 240.505 126.838 227.139 130.67 203.02C114.251 217.03 105.658 244.157 101.646 264.696C72.679 266.255 36.9305 265.329 7.38721 265.215C4.95528 252.656 3.05256 243.299 1.89893 230.547C0.516483 214.124 -0.112231 197.647 0.0161133 181.167C-0.0748177 132.442 4.75906 84.3264 37.2954 44.8223C59.5687 17.7798 89.5891 3.35361 124.258 0.337891ZM109.834 74.3857C106.304 63.1609 94.3125 56.9493 83.104 60.5391C71.9805 64.1025 65.8252 75.9794 69.3286 87.1191C72.8322 98.2586 84.6786 104.477 95.8394 101.034C107.087 97.5653 113.364 85.6113 109.834 74.3857Z" fill="currentColor"/></svg>
         </div>
-        <span class="bt-title">AI Tools</span>
-        <span class="bt-desc">Budget, RFQ, brief generator. Free, no login.</span>
-        <div class="bt-soon-tag">Coming soon</div>
+        <span class="bt-title">mimo</span>
+        <span class="bt-desc">Plan a whole celebration in one chat.</span>
         <span class="bt-arrow">&rarr;</span>
       </button>
 
@@ -5532,6 +5606,36 @@ nav {
     </div>
   </section>
 
+  <!-- B2: MIMO running strip. The consumer product's placement on the home page. -->
+  <div class="mmot" id="sec-mimo-strip" aria-label="mimo, plan a whole celebration in one chat">
+    <div class="mmot-track">
+      <div class="mmot-seq">
+        <span class="mmot-item"><span class="mmot-lock"><svg class="mmot-mark" viewBox="0 0 372 266" aria-hidden="true"><path d="M124.258 0.337891C145.802 -1.75824 174.664 6.17881 193.452 16.5068C216.916 29.2421 234.261 50.887 241.576 76.5576C319.782 68.5436 359.628 107.027 367.175 183.028C367.746 182.055 367.363 182.558 368.438 181.607C369.746 188.374 369.641 197.514 370.145 204.549C371.644 225.461 371.752 243.952 370.375 264.835C356.684 265.784 338.344 265.323 324.361 265.338L243.516 265.25C243.342 258.974 243.104 244.49 243.904 238.669C245.536 226.792 248.03 215.432 249.163 203.19C237.687 216.585 232.678 224.781 225.703 240.777C223.651 247.361 219.848 258.333 219.014 264.717C208.322 265.68 192.648 265.329 181.586 265.343C163.094 265.47 144.6 265.397 126.11 265.123C124.9 240.505 126.838 227.139 130.67 203.02C114.251 217.03 105.658 244.157 101.646 264.696C72.679 266.255 36.9305 265.329 7.38721 265.215C4.95528 252.656 3.05256 243.299 1.89893 230.547C0.516483 214.124 -0.112231 197.647 0.0161133 181.167C-0.0748177 132.442 4.75906 84.3264 37.2954 44.8223C59.5687 17.7798 89.5891 3.35361 124.258 0.337891ZM109.834 74.3857C106.304 63.1609 94.3125 56.9493 83.104 60.5391C71.9805 64.1025 65.8252 75.9794 69.3286 87.1191C72.8322 98.2586 84.6786 104.477 95.8394 101.034C107.087 97.5653 113.364 85.6113 109.834 74.3857Z" fill="currentColor"/></svg><b>mimo</b><span class="mmot-tag">New</span></span></span>
+        <span class="mmot-dot" aria-hidden="true"></span>
+        <span class="mmot-item mmot-txt">Plan a whole celebration in one chat.</span>
+        <span class="mmot-dot" aria-hidden="true"></span>
+        <span class="mmot-item"><a class="mmot-cta" href="https://buddy.nuqleus.ai/" target="_blank" rel="noopener">Try mimo<span aria-hidden="true">&rarr;</span></a></span>
+        <span class="mmot-dot" aria-hidden="true"></span>
+        <span class="mmot-item mmot-txt">You never speak to a supplier.</span>
+        <span class="mmot-dot" aria-hidden="true"></span>
+        <span class="mmot-item mmot-txt">One invoice, and mimo settles with every supplier.</span>
+        <span class="mmot-dot" aria-hidden="true"></span>
+      </div>
+      <div class="mmot-seq" aria-hidden="true">
+        <span class="mmot-item"><span class="mmot-lock"><svg class="mmot-mark" viewBox="0 0 372 266" aria-hidden="true"><path d="M124.258 0.337891C145.802 -1.75824 174.664 6.17881 193.452 16.5068C216.916 29.2421 234.261 50.887 241.576 76.5576C319.782 68.5436 359.628 107.027 367.175 183.028C367.746 182.055 367.363 182.558 368.438 181.607C369.746 188.374 369.641 197.514 370.145 204.549C371.644 225.461 371.752 243.952 370.375 264.835C356.684 265.784 338.344 265.323 324.361 265.338L243.516 265.25C243.342 258.974 243.104 244.49 243.904 238.669C245.536 226.792 248.03 215.432 249.163 203.19C237.687 216.585 232.678 224.781 225.703 240.777C223.651 247.361 219.848 258.333 219.014 264.717C208.322 265.68 192.648 265.329 181.586 265.343C163.094 265.47 144.6 265.397 126.11 265.123C124.9 240.505 126.838 227.139 130.67 203.02C114.251 217.03 105.658 244.157 101.646 264.696C72.679 266.255 36.9305 265.329 7.38721 265.215C4.95528 252.656 3.05256 243.299 1.89893 230.547C0.516483 214.124 -0.112231 197.647 0.0161133 181.167C-0.0748177 132.442 4.75906 84.3264 37.2954 44.8223C59.5687 17.7798 89.5891 3.35361 124.258 0.337891ZM109.834 74.3857C106.304 63.1609 94.3125 56.9493 83.104 60.5391C71.9805 64.1025 65.8252 75.9794 69.3286 87.1191C72.8322 98.2586 84.6786 104.477 95.8394 101.034C107.087 97.5653 113.364 85.6113 109.834 74.3857Z" fill="currentColor"/></svg><b>mimo</b><span class="mmot-tag">New</span></span></span>
+        <span class="mmot-dot"></span>
+        <span class="mmot-item mmot-txt">Plan a whole celebration in one chat.</span>
+        <span class="mmot-dot"></span>
+        <span class="mmot-item"><a class="mmot-cta" href="https://buddy.nuqleus.ai/" target="_blank" rel="noopener" tabindex="-1">Try mimo<span aria-hidden="true">&rarr;</span></a></span>
+        <span class="mmot-dot"></span>
+        <span class="mmot-item mmot-txt">You never speak to a supplier.</span>
+        <span class="mmot-dot"></span>
+        <span class="mmot-item mmot-txt">One invoice, and mimo settles with every supplier.</span>
+        <span class="mmot-dot"></span>
+      </div>
+    </div>
+  </div><!-- /mmot -->
+
   <!-- A1: RUN OF SHOW -->
   <section class="ros" id="ros">
     <div class="ros-tex" aria-hidden="true"></div>
@@ -5686,56 +5790,6 @@ nav {
     </div>
   </section>
 
-  <!-- B1: NUQLEUS — operating-system statement -->
-  <div class="nqx" id="sec-nuqleus">
-    <div class="nqx-wrap" id="nqxWrap">
-      <canvas class="nqx-dot-canvas" id="nqxDotCanvas" aria-hidden="true"></canvas>
-      <div class="nqx-bg" aria-hidden="true"></div>
-      <div class="nqx-veil" aria-hidden="true"></div>
-      <div class="nqx-aurora" aria-hidden="true"></div>
-      <div class="nqx-aurora2" aria-hidden="true"></div>
-      <div class="nqx-dust" id="nqxDust" aria-hidden="true"></div>
-      <div class="nqx-lgrad" aria-hidden="true"></div>
-
-      <div class="nqx-stage">
-        <div class="nqx-main">
-          <img class="nqx-logo" src="assets/nuqleus-logo.svg" alt="Nuqleus"/>
-          <h2 class="nqx-h">
-            <span class="nqx-ln"><span class="nqx-li">Most EMCs manage <em class="nqx-chaos">chaos.</em></span></span>
-            <span class="nqx-ln"><span class="nqx-li">We built a <em class="nqx-serif">system.</em></span></span>
-          </h2>
-          <p class="nqx-sub">A hundred tabs, a hundred threads, or one platform built for the way events actually work.</p>
-          <div class="nqx-crev"><button class="btn ghost" onclick="goPage('nuqleus')">View more</button></div>
-
-          <div class="nqx-emc">
-            <span class="nqx-emc-k">For EMCs</span>
-            <p class="nqx-emc-p">If you run an EMC, you have the same chaos.<br>Nuqleus fixes it. Limited seats, 2026.</p>
-            <a class="nqx-emc-a" onclick="showPage('contact');setTimeout(function(){if(window.selectIntent)selectIntent('partner');},80)">Interested?</a>
-          </div>
-        </div>
-
-        <div class="nqx-cardwrap">
-          <div class="nqx-engine" id="nqxEngine" aria-hidden="true">
-            <svg class="nqx-tracks" id="nqxTracks"></svg>
-            <div class="nqx-inputs" id="nqxInputs"></div>
-            <div class="nqx-core" id="nqxCore">
-              <span class="nqx-core-halo"></span>
-              <span class="nqx-core-pulse" id="nqxCorePulse"></span>
-              <span class="nqx-core-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg></span>
-              <span class="nqx-core-plate"></span>
-              <svg class="nqx-core-mark" viewBox="0 0 156 156" fill="none">
-                <circle cx="77.97" cy="77.97" r="72.23" stroke="currentColor" stroke-width="11.47"/>
-                <circle cx="67.26" cy="67.66" r="39" fill="currentColor"/>
-                <circle cx="130.93" cy="128.27" r="21" fill="currentColor"/>
-              </svg>
-            </div>
-            <div class="nqx-outputs" id="nqxOutputs"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /nqx -->
-
   <!-- C2: WHAT WE RUN ACCORDION -->
   <div class="wwr" id="sec-wwr">
     <div class="wwr-shell">
@@ -5889,6 +5943,55 @@ nav {
       </div>
     </div>
   </div><!-- /ebr -->
+  <!-- B1: NUQLEUS — operating-system statement -->
+  <div class="nqx" id="sec-nuqleus">
+    <div class="nqx-wrap" id="nqxWrap">
+      <canvas class="nqx-dot-canvas" id="nqxDotCanvas" aria-hidden="true"></canvas>
+      <div class="nqx-bg" aria-hidden="true"></div>
+      <div class="nqx-veil" aria-hidden="true"></div>
+      <div class="nqx-aurora" aria-hidden="true"></div>
+      <div class="nqx-aurora2" aria-hidden="true"></div>
+      <div class="nqx-dust" id="nqxDust" aria-hidden="true"></div>
+      <div class="nqx-lgrad" aria-hidden="true"></div>
+
+      <div class="nqx-stage">
+        <div class="nqx-main">
+          <img class="nqx-logo" src="assets/nuqleus-logo.svg" alt="Nuqleus"/>
+          <h2 class="nqx-h">
+            <span class="nqx-ln"><span class="nqx-li">We built the operating <em class="nqx-serif">system</em></span></span>
+            <span class="nqx-ln"><span class="nqx-li">that events always needed.</span></span>
+          </h2>
+          <p class="nqx-sub">One platform that replaces a hundred tabs and a hundred threads, built for the way events actually work.</p>
+          <div class="nqx-crev"><button class="btn ghost" onclick="goPage('nuqleus')">View more</button></div>
+
+          <div class="nqx-emc">
+            <span class="nqx-emc-k">Pilot program &middot; 2026</span>
+            <p class="nqx-emc-p">The first cohort of partner EMCs is already on board. Seats in the next are limited.</p>
+            <button class="nqx-emc-btn" onclick="showPage('contact');setTimeout(function(){if(window.selectIntent)selectIntent('partner');},80)">Join the waitlist <span class="nqx-emc-arr">&rarr;</span></button>
+          </div>
+        </div>
+
+        <div class="nqx-cardwrap">
+          <div class="nqx-engine" id="nqxEngine" aria-hidden="true">
+            <svg class="nqx-tracks" id="nqxTracks"></svg>
+            <div class="nqx-inputs" id="nqxInputs"></div>
+            <div class="nqx-core" id="nqxCore">
+              <span class="nqx-core-halo"></span>
+              <span class="nqx-core-pulse" id="nqxCorePulse"></span>
+              <span class="nqx-core-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg></span>
+              <span class="nqx-core-plate"></span>
+              <svg class="nqx-core-mark" viewBox="0 0 156 156" fill="none">
+                <circle cx="77.97" cy="77.97" r="72.23" stroke="currentColor" stroke-width="11.47"/>
+                <circle cx="67.26" cy="67.66" r="39" fill="currentColor"/>
+                <circle cx="130.93" cy="128.27" r="21" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="nqx-outputs" id="nqxOutputs"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /nqx -->
 
   <!-- CTA BAND -->
   <div class="cta-band">
@@ -6763,7 +6866,7 @@ nav {
       </div>
       <div class="ct-hero-note">
         <strong>Responds within 1 business day</strong>
-        <a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a>
+        hello@quietloud.ai
       </div>
     </div>
 
@@ -6873,8 +6976,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note"><a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a> &middot; Responds in 1 business day</span>
-          <button class="btn primary" onclick="sendForm('form-event','celebrate@quiet-loud.com')">Send</button>
+          <span class="ct-form-note">hello@quietloud.ai &middot; Responds in 1 business day</span>
+          <button class="btn primary">Send</button>
         </div>
       </div>
     </div>
@@ -6906,8 +7009,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note"><a href="mailto:partners@quietloud.ai">partners@quietloud.ai</a></span>
-          <button class="btn primary" onclick="sendForm('form-partner','partners@quietloud.ai')">Send inquiry</button>
+          <span class="ct-form-note">partners@quietloud.ai</span>
+          <button class="btn primary">Send inquiry</button>
         </div>
       </div>
     </div>
@@ -6939,8 +7042,8 @@ nav {
           <span class="ct-field-line"></span>
         </div>
         <div class="ct-form-foot">
-          <span class="ct-form-note"><a href="mailto:celebrate@quiet-loud.com">celebrate@quiet-loud.com</a></span>
-          <button class="btn primary" onclick="sendForm('form-general','celebrate@quiet-loud.com')">Send</button>
+          <span class="ct-form-note">hello@quietloud.ai</span>
+          <button class="btn primary">Send</button>
         </div>
       </div>
     </div>
@@ -6966,9 +7069,10 @@ nav {
       <!-- HEADER -->
       <div class="nqs-head">
         <div class="nqs-logo">
-          <img src="assets/nuqleus-logo.svg" alt="NuQLeus" class="nqs-logo-img"/>
+          <img src="assets/nuqleus-logo.svg" alt="Nuqleus" class="nqs-logo-img"/>
+          <span class="nqs-by">by Quiet Loud</span>
         </div>
-        <h2><span style="white-space:nowrap;">Most EMCs use spreadsheets.</span><em class="serif-accent">We built Nuqleus.</em></h2>
+        <h2>The operating system behind every Quiet Loud event. <em class="serif-accent" style="white-space:nowrap;">We built Nuqleus.</em></h2>
         <p class="nqs-sub">Our proprietary platform coordinates every vendor, every approval, every budget line, so your team sees what our team sees, in real time.</p>
         <button class="btn primary" onclick="window.open('https://app-staging.nuqleus.ai/','_blank')">Explore Nuqleus</button>
       </div>
@@ -7249,26 +7353,6 @@ function selectIntent(intent) {
       form.classList.remove('show');
     }
   });
-}
-
-/* Compose a pre-filled email from a contact form and hand off to the user's mail client */
-function sendForm(formId, to) {
-  const form = document.getElementById(formId);
-  if (!form) return;
-  const titleEl = form.querySelector('.ct-form-title');
-  const title = titleEl ? titleEl.textContent.trim() : 'Website inquiry';
-  const lines = [];
-  form.querySelectorAll('.ct-field').forEach(field => {
-    const labelEl = field.querySelector('label');
-    const control = field.querySelector('input, select, textarea');
-    if (!labelEl || !control) return;
-    const value = (control.value || '').trim();
-    lines.push(labelEl.textContent.trim() + ': ' + (value || '—'));
-  });
-  const subject = 'Quiet Loud — ' + title;
-  window.location.href = 'mailto:' + to +
-    '?subject=' + encodeURIComponent(subject) +
-    '&body=' + encodeURIComponent(lines.join('\n'));
 }
 
 /* ── TOOL NOTEBOOK ── */
@@ -8620,6 +8704,9 @@ document.addEventListener('keydown', e => {
     w = wrap.offsetWidth;
     h = wrap.offsetHeight;
     if (!w || !h) return;
+    /* the section is full-bleed now, so dot count would scale with area.
+       widen the grid on large viewports to hold per-frame cost roughly flat. */
+    SPACING = w > 1440 ? 26 : 20;
     canvas.width  = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     canvas.style.width  = w + 'px';
@@ -9233,6 +9320,46 @@ document.addEventListener('keydown', e => {
     wrap.addEventListener('mouseleave', function() {
       vid.pause(); try { vid.currentTime = 0; } catch(e){}
     });
+  });
+})();
+</script>
+
+<script>
+/* ── MIMO running strip: keep the track at least 2x the viewport ──
+   The CSS loop translates the track by exactly -50%, which is only seamless
+   while every sequence is identical and the count stays even. One sequence is
+   ~1070px, so on a wide screen the loop would expose a gap. Clone the pair
+   until the track is wide enough; cloning in pairs preserves both invariants. */
+(function mimoTickerFill() {
+  var strip = document.getElementById('sec-mimo-strip');
+  if (!strip) return;
+  var track = strip.querySelector('.mmot-track');
+  var originals = Array.prototype.slice.call(track.querySelectorAll('.mmot-seq'));
+  if (originals.length < 2) return;
+
+  function fill() {
+    Array.prototype.forEach.call(track.querySelectorAll('.mmot-seq[data-clone]'), function (n) {
+      n.parentNode.removeChild(n);
+    });
+    var pair = originals[0].getBoundingClientRect().width * originals.length;
+    if (!pair) return;
+    var copies = Math.ceil((window.innerWidth * 2) / pair) - 1;
+    for (var i = 0; i < copies; i++) {
+      originals.forEach(function (seq) {
+        var c = seq.cloneNode(true);
+        c.setAttribute('data-clone', '1');
+        c.setAttribute('aria-hidden', 'true');
+        Array.prototype.forEach.call(c.querySelectorAll('a'), function (a) { a.tabIndex = -1; });
+        track.appendChild(c);
+      });
+    }
+  }
+
+  fill();
+  var t;
+  window.addEventListener('resize', function () {
+    clearTimeout(t);
+    t = setTimeout(fill, 200);
   });
 })();
 </script>
